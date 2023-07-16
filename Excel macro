@@ -1,0 +1,43 @@
+Sub ImportWorkbooks()
+    Dim SourcePath As String
+    Dim DestWorkbook As Workbook
+    Dim SourceWorkbook As Workbook
+    Dim SourceSheet As Worksheet
+    Dim FileExtension As String
+    Dim FileName As String
+    Dim DestSheet As Worksheet
+    
+    ' Set the source path where the files are located
+    SourcePath = "C:\Users\YourUsername\Desktop\RTB Support Metrics\"
+    
+    ' Set the destination workbook as the workbook where the macro is executed
+    Set DestWorkbook = ThisWorkbook
+    
+    ' Loop through each file in the source path
+    FileName = Dir(SourcePath & "*.xlsx")
+    Do While FileName <> ""
+        ' Open the source workbook
+        Set SourceWorkbook = Workbooks.Open(SourcePath & FileName)
+        
+        ' Loop through each sheet in the source workbook
+        For Each SourceSheet In SourceWorkbook.Sheets
+            ' Copy the source sheet to the destination workbook
+            SourceSheet.Copy After:=DestWorkbook.Sheets(DestWorkbook.Sheets.Count)
+            
+            ' Rename the copied sheet with the source workbook name
+            Set DestSheet = DestWorkbook.Sheets(DestWorkbook.Sheets.Count)
+            DestSheet.Name = Left(SourceWorkbook.Name, InStrRev(SourceWorkbook.Name, ".") - 1)
+        Next SourceSheet
+        
+        ' Close the source workbook
+        SourceWorkbook.Close SaveChanges:=False
+        
+        ' Move to the next file
+        FileName = Dir
+    Loop
+    
+    ' Save the changes made in the destination workbook
+    DestWorkbook.Save
+    
+    MsgBox "Workbooks imported successfully!"
+End Sub
